@@ -21,30 +21,14 @@ class CustomDataChatbot:
         utils.configure_openai_api_key()
         self.openai_model = "gpt-4-1106-preview"
 
-    def save_file(self, file):
-        folder = 'tmp'
-        if not os.path.exists(folder):
-            os.makedirs(folder)
-        
-        file_path = f'./{folder}/{file.name}'
-        with open(file_path, 'wb') as f:
-            f.write(file.getvalue())
-        return file_path
-
     @st.spinner('Analyzing documents..')
     def setup_qa_chain(self, uploaded_files):
         # Load documents
         docs = []
-        print("38 docs",docs)
-        for file in uploaded_files:
-            print("40 file",file)
-            file_path = self.save_file(file)
-            print("42 file_path",file_path)
+        for file_path in uploaded_files:
             loader = PyPDFLoader(file_path)
-            print("44 loader",loader)
             docs.extend(loader.load())
-            print("46 docs",docs)
-        
+
         # Split documents
         text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=1500,
@@ -69,26 +53,19 @@ class CustomDataChatbot:
         )
 
         # Setup LLM and QA chain
-        llm = ChatOpenAI(model_name=self.openai_model, temperature=1.0, streaming=True)
+        llm = ChatOpenAI(model_name=self.openai_model, temperature=0.5, streaming=True)
         qa_chain = ConversationalRetrievalChain.from_llm(llm, retriever=retriever, memory=memory, verbose=True)
         return qa_chain
 
     @utils.enable_chat_history
     def main(self):
 
-        # CODE FOR MANUAL UPLOAD
-        # # User Inputs
-        # uploaded_files = st.sidebar.file_uploader(label='Upload PDF files', type=['pdf'], accept_multiple_files=True)
-        
-         # Load PDF files from the specified path
+        # Load PDF files from the specified path
         pdf_path = 'tmp'
-        
-        uploaded_files = [open(os.path.join(pdf_path, f), 'rb') for f in os.listdir(pdf_path) if f.endswith('.pdf')]
-        
-        print("77 uploaded files",uploaded_files)
+        uploaded_files = [os.path.join(pdf_path, f) for f in os.listdir(pdf_path) if f.endswith('.pdf')]
         
         if not uploaded_files:
-            st.error("Please upload PDF documents to continue!")
+            st.error("No PDF documents found in the specified path!")
             st.stop()
 
         user_query = st.chat_input(placeholder="Ask me anything!")
