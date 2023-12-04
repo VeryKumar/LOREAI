@@ -131,6 +131,7 @@ pynose==1.4.2
 pyOpenSSL==23.0.0
 pyotp==2.8.0
 pypandoc==1.11
+pypdf
 pyrsistent==0.19.3
 PySocks==1.7.1
 pytest==7.2.2
