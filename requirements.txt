@@ -34,7 +34,7 @@ decorator==5.1.1
 Deprecated==1.2.13
 distlib==0.3.6
 dnspython==2.3.0
-docarray
+docarray==0.39.1 
 docopt==0.6.2
 duckdb==0.7.1
 entrypoints==0.4
